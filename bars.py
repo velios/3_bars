@@ -17,20 +17,16 @@ def pretty_print_json(prepared_json_data):
 
 
 def get_biggest_bar(bars_data):
-    biggest_bar_number_of_seats = 0
-    for bar in bars_data:
-        if bar['SeatsCount'] > biggest_bar_number_of_seats:
-            biggest_bar_number_of_seats = bar['SeatsCount']
-            biggest_bar = bar['Name']
+    data_list_for_analysis = dict((bar['Name'], bar['SeatsCount']) for bar in bars_data)
+    biggest_bar_number_of_seats, biggest_bar = max(zip(data_list_for_analysis.values(),
+                                                       data_list_for_analysis.keys()))
     return biggest_bar, biggest_bar_number_of_seats
 
 
 def get_smallest_bar(bars_data):
-    smallest_bar_number_of_seats = bars_data[0]['SeatsCount']
-    for bar in bars_data:
-        if bar['SeatsCount'] < smallest_bar_number_of_seats:
-            smallest_bar_number_of_seats = bar['SeatsCount']
-            smallest_bar = bar['Name']
+    data_list_for_analysis = dict((bar['Name'], bar['SeatsCount']) for bar in bars_data)
+    smallest_bar_number_of_seats, smallest_bar = min(zip(data_list_for_analysis.values(),
+                                                         data_list_for_analysis.keys()))
     return smallest_bar, smallest_bar_number_of_seats
 
 
