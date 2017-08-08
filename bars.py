@@ -50,7 +50,7 @@ def get_closest_bar(bars_data, longitude, latitude):
             if closest_bar_distance > distance_between_me_and_bar:
                 closest_bar_distance = distance_between_me_and_bar
                 closest_bar = bar['Name']
-    return closest_bar, int(closest_bar_distance*100000)
+    return closest_bar, int(closest_bar_distance * 100000)
 
 
 if __name__ == '__main__':
@@ -61,7 +61,8 @@ if __name__ == '__main__':
     """
     cmd_argument_parser = argparse.ArgumentParser(description=parser_description)
     cmd_argument_parser.add_argument('filepath', help='Файл с данными о барах Москвы в JSON формате', type=str)
-    cmd_argument_parser.add_argument('-t', '--test', action='store_true', help='Не потребуется вводить данные с клавиатуры. Тестовый режим.')
+    cmd_argument_parser.add_argument('-t', '--test', action='store_true',
+                                     help='Не потребуется вводить данные с клавиатуры. Тестовый режим.')
     cmd_arguments = cmd_argument_parser.parse_args()
 
     bars_data = load_json_data(cmd_arguments.filepath, encoding='cp1251')
@@ -72,19 +73,18 @@ if __name__ == '__main__':
     else:
         current_longitude = 37.566316
         current_latitude = 55.723065
-        print('Тестовый режим. Заранее заданные значения долготы:{} и широты:{}'.format(current_latitude,current_longitude))
+        print('Тестовый режим. Заранее заданные значения долготы:{} и широты:{}'.format(current_latitude,
+                                                                                        current_longitude))
 
     biggest_bar, biggest_bar_number_of_seats = get_biggest_bar(bars_data)
     smallest_bar, smallest_bar_number_of_seats = get_smallest_bar(bars_data)
     closest_bar, closest_bar_distance = get_closest_bar(bars_data,
                                                         current_longitude, current_latitude)
 
-
     print('\nСамый вместительный бар это {0} на {1} мест'.format(biggest_bar,
-                                                               biggest_bar_number_of_seats))
+                                                                 biggest_bar_number_of_seats))
     print('Самый маленький бар это {0} на {1} мест'.format(smallest_bar,
                                                            smallest_bar_number_of_seats))
     print('Ближайший к вам бар это {0} на расстоянии {1} метра\n'.format(closest_bar,
-                                                                       closest_bar_distance))
+                                                                         closest_bar_distance))
     print('Спасибо что воспользовались приложением.')
-
