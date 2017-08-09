@@ -4,10 +4,15 @@ import argparse
 from math import hypot
 
 
-def load_json_data(filepath, encoding='utf-8'):
+def load_data_from_file(filepath, encoding='utf-8'):
     if not os.path.exists(filepath):
         print('Неверное имя или файл "{0}" не существет'.format(filepath))
-    with open(filepath, 'r', encoding=encoding) as data_file:
+        return None
+    with open(filepath, "r", encoding=encoding) as data_file:
+        return data_file.read()
+
+
+def load_json_data(input_data):
         return json.loads(data_file.read())
 
 
@@ -17,17 +22,15 @@ def pretty_print_json(prepared_json_data):
 
 
 def get_biggest_bar(bars_data):
-    data_list_for_analysis = dict((bar['Name'], bar['SeatsCount']) for bar in bars_data)
-    biggest_bar_number_of_seats, biggest_bar = max(zip(data_list_for_analysis.values(),
-                                                       data_list_for_analysis.keys()))
-    return biggest_bar, biggest_bar_number_of_seats
+    biggest_bar_data = max(bars_data, key=lambda bar: bar['SeatsCount'])
+    return dict(biggest_bar=biggest_bar_data['Name'],
+                biggest_bar_number_of_seats=biggest_bar_data['SeatsCount'])
 
 
 def get_smallest_bar(bars_data):
-    data_list_for_analysis = dict((bar['Name'], bar['SeatsCount']) for bar in bars_data)
-    smallest_bar_number_of_seats, smallest_bar = min(zip(data_list_for_analysis.values(),
-                                                         data_list_for_analysis.keys()))
-    return smallest_bar, smallest_bar_number_of_seats
+    smallest_bar_data = min(bars_data, key=lambda bar: bar['SeatsCount'])
+    return dict(smallest_bar=smallest_bar_data['Name'],
+                smallest_bar_number_of_seats=smallest_bar_data['SeatsCount'])
 
 
 def get_closest_bar(bars_data, longitude, latitude):
@@ -46,10 +49,11 @@ def get_closest_bar(bars_data, longitude, latitude):
             if closest_bar_distance > distance_between_me_and_bar:
                 closest_bar_distance = distance_between_me_and_bar
                 closest_bar = bar['Name']
-    return closest_bar, int(closest_bar_distance * 100000)
+    return dict(closest_bar=closest_bar,
+                closest_bar_distance=int(closest_bar_distance * 100000))
 
 
-if __name__ == '__main__':
+def configurate_cmd_parser():
     parser_description = """
     Скрипт на вход принимает путь до файла содержащих информацию о барах Москвы в JSON формате и определяет
     самый большой, маленький и ближайший к точке назначения бар
@@ -59,28 +63,40 @@ if __name__ == '__main__':
     cmd_argument_parser.add_argument('filepath', help='Файл с данными о барах Москвы в JSON формате', type=str)
     cmd_argument_parser.add_argument('-t', '--test', action='store_true',
                                      help='Не потребуется вводить данные с клавиатуры. Тестовый режим.')
-    cmd_arguments = cmd_argument_parser.parse_args()
+    return cmd_argument_parser.parse_args()
 
-    bars_data = load_json_data(cmd_arguments.filepath, encoding='cp1251')
 
-    if not cmd_arguments.test:
+def input_coordinates(test_mode_flag=False):
+    if not test_mode_flag:
         current_longitude = float(input('Пожалуйста введите долготу(например 37.566316):'))
         current_latitude = float(input('Пожалуйста введите широту(например 55.723065):'))
     else:
         current_longitude = 37.566316
         current_latitude = 55.723065
+    return current_longitude, current_latitude
+
+
+def print_final_result(data, test_mode_flag=False):
+    if test_mode_flag:
         print('Тестовый режим. Заранее заданные значения долготы:{} и широты:{}'.format(current_latitude,
                                                                                         current_longitude))
 
-    biggest_bar, biggest_bar_number_of_seats = get_biggest_bar(bars_data)
-    smallest_bar, smallest_bar_number_of_seats = get_smallest_bar(bars_data)
-    closest_bar, closest_bar_distance = get_closest_bar(bars_data,
-                                                        current_longitude, current_latitude)
-
-    print('\nСамый вместительный бар это {0} на {1} мест'.format(biggest_bar,
-                                                                 biggest_bar_number_of_seats))
-    print('Самый маленький бар это {0} на {1} мест'.format(smallest_bar,
-                                                           smallest_bar_number_of_seats))
-    print('Ближайший к вам бар это {0} на расстоянии {1} метра\n'.format(closest_bar,
-                                                                         closest_bar_distance))
+    print('\nСамый вместительный бар это {0} на {1} мест'.format(data['biggest_bar'],
+                                                                 data['biggest_bar_number_of_seats']))
+    print('Самый маленький бар это {0} на {1} мест'.format(data['smallest_bar'],
+                                                           data['smallest_bar_number_of_seats']))
+    print('Ближайший к вам бар это {0} на расстоянии {1} метра\n'.format(data['closest_bar'],
+                                                                         data['closest_bar_distance']))
     print('Спасибо что воспользовались приложением.')
+
+
+if __name__ == '__main__':
+    cmd_arguments = configurate_cmd_parser()
+    raw_bars_data = load_data_from_file(cmd_arguments.filepath, encoding='cp1251')
+    bars_data = json.loads(raw_bars_data)
+    test_mode_flag = cmd_arguments.test
+    current_longitude, current_latitude = input_coordinates(test_mode_flag)
+    result_output_data = {**get_smallest_bar(bars_data), **get_biggest_bar(bars_data),
+                          **get_closest_bar(bars_data, current_longitude, current_latitude)}
+
+    print_final_result(result_output_data, test_mode_flag)
