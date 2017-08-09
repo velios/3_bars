@@ -12,10 +12,6 @@ def load_data_from_file(filepath, encoding='utf-8'):
         return data_file.read()
 
 
-def load_json_data(input_data):
-        return json.loads(data_file.read())
-
-
 def pretty_print_json(prepared_json_data):
     return json.dumps(prepared_json_data, sort_keys=True, indent=4,
                       separators=(',', ': '), ensure_ascii=False)
