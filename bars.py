@@ -72,17 +72,17 @@ def input_coordinates(test_mode_flag=False):
     return current_longitude, current_latitude
 
 
-def print_final_result(data, test_mode_flag=False):
+def print_final_result(output_data, test_mode_flag=False):
     if test_mode_flag:
         print('Тестовый режим. Заранее заданные значения долготы:{} и широты:{}'.format(current_latitude,
                                                                                         current_longitude))
 
-    print('\nСамый вместительный бар это {0} на {1} мест'.format(data['biggest_bar'],
-                                                                 data['biggest_bar_number_of_seats']))
-    print('Самый маленький бар это {0} на {1} мест'.format(data['smallest_bar'],
-                                                           data['smallest_bar_number_of_seats']))
-    print('Ближайший к вам бар это {0} на расстоянии {1} метра\n'.format(data['closest_bar'],
-                                                                         data['closest_bar_distance']))
+    print('\nСамый вместительный бар это {0} на {1} мест'.format(output_data['biggest_bar'],
+                                                                 output_data['biggest_bar_number_of_seats']))
+    print('Самый маленький бар это {0} на {1} мест'.format(output_data['smallest_bar'],
+                                                           output_data['smallest_bar_number_of_seats']))
+    print('Ближайший к вам бар это {0} на расстоянии {1} метра\n'.format(output_data['closest_bar'],
+                                                                         output_data['closest_bar_distance']))
     print('Спасибо что воспользовались приложением.')
 
 
